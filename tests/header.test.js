@@ -12,6 +12,10 @@ beforeEach(async () => {
   await page.goto("http://localhost:3000");
 });
 
+afterEach(async () => {
+  await browser.close();
+});
+
 test("we can launch a browser", async () => {
   // #root > div > div > nav > div > a
   const text = await page.$eval("a.brand-logo", (el) => el.innerHTML);
