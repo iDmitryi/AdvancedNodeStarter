@@ -3,7 +3,10 @@ const puppeteer = require("puppeteer");
 let browser, page;
 
 beforeEach(async () => {
-  browser = await puppeteer.launch({});
+  browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox"],
+  });
 
   page = await browser.newPage();
 
