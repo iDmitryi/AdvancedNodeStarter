@@ -33,7 +33,7 @@ test("clicking login start oauth flow", async () => {
   expect(url).toMatch(/accounts\.google\.com/);
 });
 
-test("when sign in, shows logout button", async () => {
+test.only("when sign in, shows logout button", async () => {
   const id = "66ae0316a6d51e92d6e4b386";
 
   const Buffer = require("safe-buffer").Buffer;
@@ -55,5 +55,15 @@ test("when sign in, shows logout button", async () => {
 
   const sig = keygrip.sign("session=" + sessionString);
 
-  console.log(sessionString, sig);
+  await page.setCookie({ name: "session", value: sessionString });
+  await page.setCookie({ name: "session.sig", value: sig });
+
+  // refresh the page to see updated header
+  await page.goto("http://localhost:3000");
+
+  await page.waitFor('a[href="/auth/logout"]');
+
+  const text = await page.$eval('a[href="/auth/logout"]', (el) => el.innerHTML);
+
+  expect(text).toEqual("Logout");
 });
