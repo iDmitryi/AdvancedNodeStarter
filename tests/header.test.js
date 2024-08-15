@@ -1,4 +1,6 @@
 const puppeteer = require("puppeteer");
+const sessionFactory = require("./factories/sessionFactory");
+const userFactory = require("./factories/userFactory");
 
 let browser, page;
 
@@ -33,29 +35,12 @@ test("clicking login start oauth flow", async () => {
   expect(url).toMatch(/accounts\.google\.com/);
 });
 
-test.only("when sign in, shows logout button", async () => {
-  const id = "66ae0316a6d51e92d6e4b386";
+test("when sign in, shows logout button", async () => {
+  const user = await userFactory();
 
-  const Buffer = require("safe-buffer").Buffer;
+  const { session, sig } = sessionFactory(user);
 
-  const sessionObject = {
-    passport: {
-      user: id,
-    },
-  };
-
-  const sessionString = Buffer.from(JSON.stringify(sessionObject)).toString(
-    "base64"
-  );
-
-  const Keygrip = require("keygrip");
-  const keys = require("../config/keys");
-
-  const keygrip = new Keygrip([keys.cookieKey]);
-
-  const sig = keygrip.sign("session=" + sessionString);
-
-  await page.setCookie({ name: "session", value: sessionString });
+  await page.setCookie({ name: "session", value: session });
   await page.setCookie({ name: "session.sig", value: sig });
 
   // refresh the page to see updated header
