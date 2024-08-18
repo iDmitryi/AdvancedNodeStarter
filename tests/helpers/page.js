@@ -55,7 +55,7 @@ class CustomPage {
   }
 
   post(path, data) {
-    return page.evaluate(
+    return this.page.evaluate(
       (_path, _data) => {
         return fetch(_path, {
           method: "POST",
@@ -68,6 +68,14 @@ class CustomPage {
       },
       path,
       data
+    );
+  }
+
+  execRequests(actions) {
+    return Promise.all(
+      actions.map(({ method, path, data }) => {
+        return this[method](path, data);
+      })
     );
   }
 }
